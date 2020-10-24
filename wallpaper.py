@@ -1,45 +1,40 @@
 import os
 import requests
 import shutil  # to save image locally
+import json
 import random
-from bs4 import BeautifulSoup
+
+
+def get_url(page):
+    url = f'https://unsplash.com/napi/search/photos?query=nepal&xp=feedback-loop-v2%3Aexperiment&per_page=20&page={page}&orientation=landscape'
+    return url
 
 
 def get_random_page():
-    response = requests.get('https://photonepal.travel/most/downloads')
-    soup = BeautifulSoup(response.text, features="lxml")
-    pagination_tag = soup.find("ul", {"class": "pagination"})
-    pages = pagination_tag.find_all('li')
-    start = int(pages[1].text)
-    end = int(pages[-2].text)
-    page = random.randint(start, end)
+    response = requests.get(get_url(1))
+    response_json = json.loads(response.text)
+    total_pages = response_json['total_pages']
+    page = random.randint(1, total_pages)
     return page
 
 
 def get_random_image():
     page = get_random_page()
-    response = requests.get(f'https://photonepal.travel/ajax/downloads?page={page}')
-    soup = BeautifulSoup(response.text, features="lxml")
-    image_tag = soup.find_all("a", {"class": "item hovercard"}, href=True)
-    return random.choice(image_tag)['href']
+    response = requests.get(get_url(page))
+    response_json = json.loads(response.text)
+    image = random.choice(response_json['results'])['urls']['raw']
+    return image
 
 
 def save_image():
     image = get_random_image()
-    name = image.split('/')[-1]
-    response = requests.get(image)
-    soup = BeautifulSoup(response.text, features="lxml")
-    img = soup.find("img", {"alt": "download_img", "class": "img-responsive img-rounded"})
-
     # stream = True, to return the stream content.
-    image_url = img['src']
-    r = requests.get(image_url, stream=True)
+    r = requests.get(image, stream=True)
 
     if r.status_code == 200:
         # decode_content = True, to ensure the downloaded image size will not be zero.
         r.raw.decode_content = True
-
-        filename = f"{name}.{image_url.split('.')[-1]}"
+        filename = "wallpaper.jpg"
 
         with open(filename, 'wb') as f:
             shutil.copyfileobj(r.raw, f)

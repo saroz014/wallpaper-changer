@@ -1,6 +1,6 @@
 # Wallpaper Changer
 
-Changes wallpaper in linux system with most downloaded images from [Photonepal](https://photonepal.travel/).
+Changes wallpaper in linux system with landscape Nepal pictures from [Unsplash](https://unsplash.com/s/photos/nepal?orientation=landscape).
 
 # Requirements
 
@@ -12,7 +12,7 @@ Changes wallpaper in linux system with most downloaded images from [Photonepal](
 ```
 python3 wallpaper.py
 
-This will fetch a random image from Most Downloads section and update the wallpaper.
+This will fetch a random picture and update the wallpaper.
 ```
 `
 Note: Can also be scheduled using cron to change wallpaper at different intervals.
